@@ -4,7 +4,7 @@
 | ---------------------- | ------------ | ------------ | ------------ | ------------ | ------------ | ------------ | ------------ | ------------ |
 | Identification (0x00)  | ID4(1)       | ID3(0)       | ID2(1)       | ID1(0)       | ID0(1)       | VER2(0)      | VER1(0)      | VER0(1)      |
 | Address (0x01)         | ADDR7(0)     | ADDR6(0)     | ADDR5(0)     | ADDR4(0)     | ADDR3(0)     | ADDR2(0)     | ADDR1(0)     | ADDR0(0)     |
-| Config (0x02)          | ----         | ----         | PIN1(0)      | PIN0(1)      | PWF2(0)      | PWF1(1)      | PWF0(0)      | INUP(1)      |
+| Config (0x02)          | ----         | ----         | PWF2(0)      | PWF1(1)      | PWF0(0)      | INUP(1)      | PIN1(0)      | PIN0(1)      |
 | Control (0x03)         | ----         | ----         | ----         | ----         | ----         | CALC(0)      | SAV(0)       | RST(0)       |
 | Frequency A (0x04)     | FREQA7(0)    | FREQA6(0)    | FREQA5(0)    | FREQA4(0)    | FREQA3(0)    | FREQA2(0)    | FREQA1(0)    | FREQA0(0)    |
 | Frequency B (0x05)     | FREQB7(0)    | FREQB6(0)    | FREQB5(0)    | FREQB4(0)    | FREQB3(0)    | FREQB2(0)    | FREQB1(0)    | FREQB0(0)    |
@@ -24,23 +24,23 @@
 
 ## Config
 
-## Input Pull up
-
-Min: 0 Max: 1 Default: 1
-
-Enables pull up on the configured pin
-
-## Pulse Width Filter
-
-Min: 0 Max: 7 Default: 2
-
-Ignore pulses under VALUE \* 50us, eg 2 \* 50us = 100us
-
 ## Pin Mapping
 
-Min:0 Max:3 Default: 1
+Bits: 0 - 1 Min:0 Max:3 Default: 1
 
 0: Pin 5
 1: Pin 3
 2: Pin 4
 3: Pin 1
+
+## Input Pull up
+
+Bits: 2 Min: 0 Max: 1 Default: 1
+
+Enables pull up on the configured pin
+
+## Pulse Width Filter
+
+Bits:3 - 5 Min: 0 Max: 7 Default: 2
+
+Ignore pulses under VALUE \* 50us, eg 2 \* 50us = 100us

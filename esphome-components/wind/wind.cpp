@@ -7,8 +7,8 @@ static const char *TAG = "wind";
 
 void WindComponent::setup() {
   ESP_LOGCONFIG(TAG, "Setting up Wind Sensor...");
-  if (this->dep_heading_sensor_ != nullptr && this->dep_frequency_sensor_ != nullptr &&
-      this->dep_max_frequency_sensor_ != nullptr) {
+  if (this->dep_heading_sensor_ == nullptr || this->dep_frequency_sensor_ == nullptr ||
+      this->dep_max_frequency_sensor_ == nullptr) {
     this->error_code_ = DEPENDENCIES_ERROR;
     this->mark_failed();
     return;
@@ -48,12 +48,12 @@ void WindComponent::update_max_speed_sensor(float value) {
 }
 
 float WindComponent::heading_to_heading(float value) {
-  float heading = value;
+  float heading = value * -1.0;  // TODO: * -1
   return heading;
 }
 
 float WindComponent::frequency_to_speed(float value) {
-  float speed = value * 10.0;
+  float speed = value * 1.0;  // TODO:
   return speed;
 }
 

@@ -16,6 +16,7 @@ static const char *TAG = "freqtiny";
 #define REGISTER_MIN_PWM (0x12)
 
 #define REGISTER_IDENTIFICATION_VALUE ((0b10101 << 3) | (0b001))
+#define REGISTER_CONTROL_SAVE_VALUE (0b1 << 1)
 #define REGISTER_CONTROL_CALCULATE_VALUE (0b1 << 2)
 
 void FreqTinyComponent::setup() {
@@ -35,10 +36,17 @@ void FreqTinyComponent::setup() {
   }
 
   uint8_t config = 0;
-  config |= 0b1 << 0;    // Enable Pullup on pin
-  config |= 0b010 << 1;  // Min Pulse length: 50ms * 2 = 100ms
-  config |= 0b01 << 4;   // Pin Select: 1 = Pin 3
+  config |= this->pin_ << 0;                 // Select pin
+  config |= this->pin_pullup_ << 2;          // Select Pullup pin
+  config |= this->pulse_width_filter_ << 3;  // Select pulse width filter mode;
   if (!this->write_byte(REGISTER_CONFIG, config)) {
+    this->error_code_ = COMMUNICATION_FAILED;
+    this->mark_failed();
+    return;
+  }
+
+  // Save Config
+  if (!this->write_byte(REGISTER_CONTROL, REGISTER_CONTROL_SAVE_VALUE)) {
     this->error_code_ = COMMUNICATION_FAILED;
     this->mark_failed();
     return;
@@ -47,6 +55,8 @@ void FreqTinyComponent::setup() {
 
 void FreqTinyComponent::dump_config() {
   ESP_LOGCONFIG(TAG, "FreqTiny:");
+  ESP_LOGCONFIG(TAG, "  pin=%u pin_pullup=%u pulse_width_filter=%u", this->pin_, this->pin_pullup_,
+           this->pulse_width_filter_);
   LOG_I2C_DEVICE(this);
   if (this->error_code_ == COMMUNICATION_FAILED) {
     ESP_LOGE(TAG, "Communication with Frequency senor failed!");
@@ -83,8 +93,8 @@ void FreqTinyComponent::update() {
 
   this->status_clear_warning();
 
-  ESP_LOGD(TAG, "Got frq=%0.02fHz pwm=%u max_frq=%0.02fHz max_pwm=%u min_frq=%0.02fHz min_pwm=%u",
-           frequency, pwm, max_frequency, max_pwm, min_frequency, min_pwm);
+  ESP_LOGD(TAG, "Got frq=%0.02fHz pwm=%u max_frq=%0.02fHz max_pwm=%u min_frq=%0.02fHz min_pwm=%u", frequency, pwm,
+           max_frequency, max_pwm, min_frequency, min_pwm);
 
   if (this->frequency_sensor_ != nullptr)
     this->frequency_sensor_->publish_state(frequency);

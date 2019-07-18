@@ -18,7 +18,7 @@ wind_ns = cg.esphome_ns.namespace('wind')
 WindComponent = wind_ns.class_('WindComponent', cg.Component)
 
 heading_schema = sensor.sensor_schema(UNIT_DEGREES, ICON_EMPTY, 0)
-speed_schema = sensor.sensor_schema(UNIT_EMPTY, ICON_EMPTY, 2)
+speed_schema = sensor.sensor_schema("km/h", ICON_EMPTY, 2)
 
 CONFIG_SCHEMA = cv.Schema({
     cv.GenerateID(): cv.declare_id(WindComponent),
