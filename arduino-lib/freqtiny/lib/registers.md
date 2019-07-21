@@ -2,10 +2,10 @@
 
 | REG                    | BIT 7        | BIT 6        | BIT 5        | BIT 4        | BIT 3        | BIT 2        | BIT 1        | BIT 0        |
 | ---------------------- | ------------ | ------------ | ------------ | ------------ | ------------ | ------------ | ------------ | ------------ |
-| Identification (0x00)  | ID4(1)       | ID3(0)       | ID2(1)       | ID1(0)       | ID0(1)       | VER2(0)      | VER1(0)      | VER0(1)      |
+| Identification (0x00)  | ID4(1)       | ID3(0)       | ID2(1)       | ID1(0)       | ID0(1)       | VER2(0)      | VER1(0)      | VER0(0)      |
 | Address (0x01)         | ADDR7(0)     | ADDR6(0)     | ADDR5(0)     | ADDR4(0)     | ADDR3(0)     | ADDR2(0)     | ADDR1(0)     | ADDR0(0)     |
 | Config (0x02)          | ----         | ----         | PWF2(0)      | PWF1(1)      | PWF0(0)      | INUP(1)      | PIN1(0)      | PIN0(1)      |
-| Control (0x03)         | ----         | ----         | ----         | ----         | ----         | CALC(0)      | SAV(0)       | RST(0)       |
+| Control (0x03)         | ----         | ----         | ----         | ----         | CALC(0)      | SAV(0)       | CMT(0)       | RST(0)       |
 | Frequency A (0x04)     | FREQA7(0)    | FREQA6(0)    | FREQA5(0)    | FREQA4(0)    | FREQA3(0)    | FREQA2(0)    | FREQA1(0)    | FREQA0(0)    |
 | Frequency B (0x05)     | FREQB7(0)    | FREQB6(0)    | FREQB5(0)    | FREQB4(0)    | FREQB3(0)    | FREQB2(0)    | FREQB1(0)    | FREQB0(0)    |
 | Frequency C (0x06)     | FREQC7(0)    | FREQC6(0)    | FREQC5(0)    | FREQC4(0)    | FREQC3(0)    | FREQC2(0)    | FREQC1(0)    | FREQC0(0)    |
@@ -21,6 +21,10 @@
 | Frequency MIN C (0x10) | FREQMINC7(0) | FREQMINC6(0) | FREQMINC5(0) | FREQMINC4(0) | FREQMINC3(0) | FREQMINC2(0) | FREQMINC1(0) | FREQMINC0(0) |
 | Frequency MIN D (0x11) | FREQMIND7(0) | FREQMIND6(0) | FREQMIND5(0) | FREQMIND4(0) | FREQMIND3(0) | FREQMIND2(0) | FREQMIND1(0) | FREQMIND0(0) |
 | PWM MIN (0x12)         | PWMMIN7(0)   | PWMMIN6(0)   | PWMMIN5(0)   | PWMMIN4(0)   | PWMMIN3(0)   | PWMMIN2(0)   | PWMMIN1(0)   | PWMMIN0(0)   |
+
+## Address
+
+Requires save and power reset to take effect
 
 ## Config
 
@@ -44,3 +48,10 @@ Enables pull up on the configured pin
 Bits:3 - 5 Min: 0 Max: 7 Default: 2
 
 Ignore pulses under VALUE \* 50us, eg 2 \* 50us = 100us
+
+## Control
+
+1 = Reset to defaults
+2 = Commit config to memory
+4 = Save config to flash
+8 = Calculate frequency data

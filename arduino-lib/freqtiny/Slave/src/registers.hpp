@@ -52,11 +52,34 @@ public:
       REGISTERS[reg] = val;
     }
   }
-
   void inline RESET() {
     // Reset regs to defaults
     SET(REGISTER_ADDRESS, REGISTER_ADDRESS_DFAULT);
     SET(REGISTER_CONFIG, REGISTER_CONFIG_DEFAULT);
+  }
+  uint8_t inline GET_PIN() {
+    uint8_t pin = (GET(REGISTER_CONFIG) & REGISTER_CONFIG_PIN_MASK) >>
+                  REGISTER_CONFIG_PIN_SHIFT;
+    switch (pin) {
+    case 0:
+      return 5;
+    case 1:
+      return 3;
+    case 2:
+      return 4;
+    case 3:
+      return 1;
+    default:
+      return 3;
+    }
+  }
+  uint8_t inline GET_INPUT_PULLUP() {
+    return (GET(REGISTER_CONFIG) & REGISTER_CONFIG_INPUT_PULLUP_MASK) >>
+           REGISTER_CONFIG_INPUT_PULLUP_SHIFT;
+  }
+  uint8_t inline GET_PULSEWIDTH_FILTER_FACTOR() {
+    return (GET(REGISTER_CONFIG) & REGISTER_CONFIG_PULSE_WIDTH_FILTER_MASK) >>
+           REGISTER_CONFIG_PULSE_WIDTH_FILTER_SHIFT;
   }
 
 private:

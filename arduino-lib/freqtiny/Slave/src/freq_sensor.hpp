@@ -5,7 +5,7 @@
 
 void enablePCIPin(uint8_t pin);
 
-struct WindSensorData {
+struct FreqSensorData {
   float frequency = 0;
   uint8_t pwm = 0;
   float max_frequency = 0;
@@ -14,17 +14,30 @@ struct WindSensorData {
   uint8_t min_pwm = 0;
 };
 
-class WindSensor {
+class J {
 public:
   void setup(uint8_t pin, bool inputPullup, uint8_t pulse_width_filter_factor) {
     PIN = pin;
     PULSE_WIDTH_FILTER = pulse_width_filter_factor * 50;
     pinMode(PIN, inputPullup ? INPUT_PULLUP : INPUT);
     enablePCIPin(PIN);
+    reset();
   }
 
-  WindSensorData getData() {
-    WindSensorData data;
+  void reset() {
+    HIGH_TOTAL = 0;
+    HIGH_COUNT = 0;
+    HIGH_MAX = 0;
+    HIGH_MIN = 0;
+    LOW_TOTAL = 0;
+    LOW_COUNT = 0;
+    LOW_MAX = 0;
+    LOW_MIN = 0;
+    LAST_PULSE_TIME = 0;
+  }
+
+  FreqSensorData getData() {
+    FreqSensorData data;
 
     float HIGH_AVG = (float)HIGH_TOTAL / (float)HIGH_COUNT;
     float LOW_AVG = (float)LOW_TOTAL / (float)LOW_COUNT;
@@ -36,15 +49,7 @@ public:
     data.min_frequency = getFrequency(HIGH_MAX, LOW_MAX);
     data.min_pwm = getPWM(HIGH_MAX, LOW_MAX);
 
-    HIGH_TOTAL = 0;
-    HIGH_COUNT = 0;
-    HIGH_MAX = 0;
-    HIGH_MIN = 0;
-    LOW_TOTAL = 0;
-    LOW_COUNT = 0;
-    LOW_MAX = 0;
-    LOW_MIN = 0;
-    LAST_PULSE_TIME = 0;
+    reset();
 
     return data;
   }
@@ -121,13 +126,15 @@ private:
 
     return (uint8_t)((high / (high + low)) * 255.0);
   }
-} WIND_SENSOR;
+} FREQ_SENSOR;
 
 void enablePCIPin(uint8_t pin) {
   // enable interrupt for the group
   bitSet(*digitalPinToPCICR(pin), digitalPinToPCICRbit(pin));
+  // clear all pins
+  *digitalPinToPCMSK(pin) = 0b0;
   // enable pin
   bitSet(*digitalPinToPCMSK(pin), digitalPinToPCMSKbit(pin));
 }
 
-ISR(PCINT0_vect) { WIND_SENSOR.onChange(); }
+ISR(PCINT0_vect) { FREQ_SENSOR.onChange(); }

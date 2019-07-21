@@ -16,8 +16,8 @@ static const char *TAG = "freqtiny";
 #define REGISTER_MIN_PWM (0x12)
 
 #define REGISTER_IDENTIFICATION_VALUE ((0b10101 << 3) | (0b001))
-#define REGISTER_CONTROL_SAVE_VALUE (0b1 << 1)
-#define REGISTER_CONTROL_CALCULATE_VALUE (0b1 << 2)
+#define REGISTER_CONTROL_COMMIT_VALUE (0b1 << 1)
+#define REGISTER_CONTROL_CALCULATE_VALUE (0b1 << 3)
 
 void FreqTinyComponent::setup() {
   ESP_LOGCONFIG(TAG, "Setting up FreqTiny ...");
@@ -45,8 +45,8 @@ void FreqTinyComponent::setup() {
     return;
   }
 
-  // Save Config
-  if (!this->write_byte(REGISTER_CONTROL, REGISTER_CONTROL_SAVE_VALUE)) {
+  // Commit config
+  if (!this->write_byte(REGISTER_CONTROL, REGISTER_CONTROL_COMMIT_VALUE)) {
     this->error_code_ = COMMUNICATION_FAILED;
     this->mark_failed();
     return;
