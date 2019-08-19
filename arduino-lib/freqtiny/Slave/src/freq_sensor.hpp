@@ -14,7 +14,7 @@ struct FreqSensorData {
   uint8_t min_pwm = 0;
 };
 
-class J {
+class FreqSensor {
 public:
   void setup(uint8_t pin, bool inputPullup, uint8_t pulse_width_filter_factor) {
     PIN = pin;
