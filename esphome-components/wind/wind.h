@@ -2,6 +2,7 @@
 
 #include "esphome/core/component.h"
 #include "esphome/components/sensor/sensor.h"
+#include "esphome/components/text_sensor/text_sensor.h"
 
 namespace esphome {
 namespace wind {
@@ -12,6 +13,9 @@ class WindComponent : public Component {
   float get_setup_priority() const override;
 
   void set_heading_sensor(sensor::Sensor *heading_sensor) { heading_sensor_ = heading_sensor; }
+  void set_heading_compass_sensor(text_sensor::TextSensor *heading_compass_sensor) {
+    heading_compass_sensor_ = heading_compass_sensor;
+  }
   void set_speed_sensor(sensor::Sensor *speed_sensor) { speed_sensor_ = speed_sensor; }
   void set_max_speed_sensor(sensor::Sensor *max_speed_sensor) { max_speed_sensor_ = max_speed_sensor; }
 
@@ -24,6 +28,7 @@ class WindComponent : public Component {
 
  protected:
   sensor::Sensor *heading_sensor_;
+  text_sensor::TextSensor *heading_compass_sensor_;
   sensor::Sensor *speed_sensor_;
   sensor::Sensor *max_speed_sensor_;
   sensor::Sensor *dep_heading_sensor_;
@@ -35,11 +40,14 @@ class WindComponent : public Component {
     DEPENDENCIES_ERROR,
   } error_code_;
 
+ private:
   void update_heading_sensor(float value);
+  void update_heading_compass_sensor(float value);
   void update_speed_sensor(float value);
   void update_max_speed_sensor(float value);
 
   float heading_to_heading(float value);
+  std::string heading_to_heading_compass(float value);
   float frequency_to_speed(float value);
 };
 

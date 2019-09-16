@@ -3,7 +3,11 @@
 
 namespace esphome {
 namespace wind {
-static const char *TAG = "wind";
+
+static const char* TAG = "wind";
+
+static const char* DEG_TO_COMPASS[] = {"N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE",
+                                       "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"};
 
 void WindComponent::setup() {
   ESP_LOGCONFIG(TAG, "Setting up Wind Sensor...");
@@ -17,6 +21,7 @@ void WindComponent::setup() {
   this->dep_heading_sensor_->add_on_state_callback([this](float value) { this->update_heading_sensor(value); });
   this->dep_frequency_sensor_->add_on_state_callback([this](float value) { this->update_speed_sensor(value); });
   this->dep_max_frequency_sensor_->add_on_state_callback([this](float value) { this->update_max_speed_sensor(value); });
+  this->heading_sensor_->add_on_state_callback([this](float value) { this->update_heading_compass_sensor(value); });
 }
 
 void WindComponent::dump_config() {
@@ -37,6 +42,11 @@ void WindComponent::update_heading_sensor(float value) {
   this->heading_sensor_->publish_state(heading);
 }
 
+void WindComponent::update_heading_compass_sensor(float value) {
+  std::string heading = this->heading_to_heading_compass(value);
+  this->heading_compass_sensor_->publish_state(heading);
+}
+
 void WindComponent::update_speed_sensor(float value) {
   float speed = this->frequency_to_speed(value);
   this->speed_sensor_->publish_state(speed);
@@ -48,8 +58,14 @@ void WindComponent::update_max_speed_sensor(float value) {
 }
 
 float WindComponent::heading_to_heading(float value) {
-  float heading = value * -1.0;  // TODO: * -1
+  float heading = value * -1.0;
   return heading;
+}
+
+std::string WindComponent::heading_to_heading_compass(float value) {
+  int val = int(value) % 360;
+  val = int((val / 22.5) + 0.5);
+  return DEG_TO_COMPASS[(val % 16)];
 }
 
 float WindComponent::frequency_to_speed(float value) {
