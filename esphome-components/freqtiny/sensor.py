@@ -2,6 +2,7 @@ import esphome.codegen as cg
 import esphome.config_validation as cv
 from esphome.components import i2c, sensor
 from esphome.const import CONF_ADDRESS, CONF_ID, UNIT_EMPTY, ICON_PULSE
+from esphome.py_compat import text_type
 
 DEPENDENCIES = ['i2c']
 
@@ -17,7 +18,8 @@ CONF_MIN_PWM = 'min_pwm'
 
 
 freqtiny_ns = cg.esphome_ns.namespace('freqtiny')
-FreqTinyComponent = freqtiny_ns.class_('FreqTinyComponent', cg.PollingComponent, i2c.I2CDevice)
+FreqTinyComponent = freqtiny_ns.class_(
+    'FreqTinyComponent', cg.PollingComponent, i2c.I2CDevice)
 
 FreqTinyPin = freqtiny_ns.enum('FreqTinyPin')
 FreqTinyPins = {
@@ -40,13 +42,20 @@ FreqTinyPulseWidthFilters = {
 }
 
 
-def validate_enum(enum_values, unit=None):
+def validate_enum(enum_values, units=None, int=True):
+    _units = []
+    if units is not None:
+        _units = units if isinstance(units, list) else [units]
+        _units = [text_type(x) for x in _units]
+    enum_bound = cv.enum(enum_values, int=int)
+
     def validate_enum_bound(value):
         value = cv.string(value)
-        if unit and (value.endswith(unit.encode(encoding='UTF-8', errors='strict'))
-                     or value.endswith(unit)):
-            value = value[:-len(unit)]
-        return cv.enum(enum_values, int=True)(value)
+        for unit in _units:
+            if value.endswith(unit):
+                value = value[:-len(unit)]
+                break
+        return enum_bound(value)
     return validate_enum_bound
 
 
@@ -58,7 +67,7 @@ CONFIG_SCHEMA = cv.Schema({
     cv.Optional(CONF_ADDRESS): cv.i2c_address,
     cv.Optional(CONF_PIN, default='3'): validate_enum(FreqTinyPins),
     cv.Optional(CONF_PIN_PULLUP, default=True): cv.boolean,
-    cv.Optional(CONF_PULSE_WIDTH_FILTER, default='100us'): validate_enum(FreqTinyPulseWidthFilters, unit="us"),
+    cv.Optional(CONF_PULSE_WIDTH_FILTER, default='100us'): validate_enum(FreqTinyPulseWidthFilters, units="us"),
     cv.Optional(CONF_FREQUENCY): frequency_schema,
     cv.Optional(CONF_PWM): pwm_schema,
     cv.Optional(CONF_MAX_FREQUENCY): frequency_schema,
